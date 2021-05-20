@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './contact.css'
 import PropTypes from 'prop-types'
-
+import {Consumer} from '../context';
 
  class Contact extends Component {
     
@@ -21,49 +21,63 @@ import PropTypes from 'prop-types'
             })
         }
         // il faut que la fonction soit arrow function pour lire date in props 
-        deleteContact= () =>{
-            this.props.deleteContact();
+        deleteContact= (id,dispatch) =>{
+            dispatch({
+                type:"DELETE_CONTACT",
+                payload:id
+            })
         }
         
     render() {
-        const {name ,tel,email}=this.props.data;
-
+        const {id,name ,tel,email}=this.props.data;
         return (
-            
-            <div>
-               <div className="card">
-                   <div className="card-body">
-                       <div className="card-title">
-                       <h4 className="card-title">Name :{name}
-                       <i onClick={this.showContact.bind(this,name)} className="fa fa-sort-down "></i>
-                       <i style ={{color:'red',float:'right' ,cursor:'pointer'}} onClick={this.deleteContact} className="fa fa-times "></i>
-                       </h4>
-                       </div>
-                       <div className="cart-text">
-                        {(this.state.showContactToogle) ?(
-                            <ul className="list-group">
-                            <li className="list-group-item">Phone :{tel}</li>
-                            <li className="list-group-item">Email:{email}</li>
-                            <li className="list-group-item">Phone :{tel}</li>
-                            </ul>
-                        ): null}
-                        
-                           <button  onClick={this.showmore.bind(this,name)}  className="btn btn-sm btn-primary ">Read more </button>
-                            {(this.state.showDescription) ? (
-                                  <div><p className="lead">
-                                  {name} est un ingenieur en informatique avec une grande experience ,ouverte pour le travail <br/> 
-                                  Email:{email}<br/> 
-                                  phone:{tel} <br/>
-                                  Localion :casa-Rabat-Mohamadia
-                                  Meci 
-                                       </p></div>
-                            ):""}
-                         
-                       </div>
-                      
-                   </div>
-               </div>
-            </div>
+           <Consumer>
+              
+               {value => {
+                   const { dispatch}=value;
+                   return(
+                    <div>
+                    <div className="card">
+                        <div className="card-body">
+                            <div className="card-title">
+                            <h4 className="card-title">Name :{name}
+                            <i onClick={this.showContact.bind(this,name)} className="fa fa-sort-down "></i>
+                            <i style ={{color:'red',float:'right' ,cursor:'pointer'}} onClick={this.deleteContact.bind(this,id,dispatch)} className="fa fa-times "></i>
+                            </h4>
+                            </div>
+                            <div className="cart-text">
+                             {(this.state.showContactToogle) ?(
+                                 <ul className="list-group">
+                                 <li className="list-group-item">Phone :{tel}</li>
+                                 <li className="list-group-item">Email:{email}</li>
+                                 <li className="list-group-item">Phone :{tel}</li>
+                                 </ul>
+                             ): null}
+                             
+                                <button  onClick={this.showmore.bind(this,name)}  className="btn btn-sm btn-primary ">Read more </button>
+                                 {(this.state.showDescription) ? (
+                                       <div><p className="lead">
+                                       {name} est un ingenieur en informatique avec une grande experience ,ouverte pour le travail <br/> 
+                                       Email:{email}<br/> 
+                                       phone:{tel} <br/>
+                                       Localion :casa-Rabat-Mohamadia
+                                       Meci 
+                                            </p></div>
+                                 ):""}
+                              
+                            </div>
+                           
+                        </div>
+                    </div>
+                 </div>
+                   )
+
+               }
+                   
+                  
+               }
+           </Consumer>   
+         
         )
     }
 }
