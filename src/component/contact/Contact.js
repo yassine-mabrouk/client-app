@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import './contact.css'
 import PropTypes from 'prop-types'
 import {Consumer} from '../context';
-
+import axios from 'axios'
+import {Link} from 'react-router-dom'
  class Contact extends Component {
     
         // creation d'un state 
@@ -21,15 +22,21 @@ import {Consumer} from '../context';
             })
         }
         // il faut que la fonction soit arrow function pour lire date in props 
-        deleteContact= (id,dispatch) =>{
-            dispatch({
+        deleteContact= async (id,dispatch) =>{
+            // supprimer un contact dans le serverur $
+            try{
+         const res=  await axios.delete("https://jsonplaceholder.typicode.com/users/"+id);
+             dispatch({
                 type:"DELETE_CONTACT",
                 payload:id
-            })
+               });
+            }catch(e){
+                console.log("Canoot delete :"+e);
+            }
         }
         
     render() {
-        const {id,name ,tel,email}=this.props.data;
+        const {id,name ,phone,email}=this.props.data;
         return (
            <Consumer>
               
@@ -42,15 +49,27 @@ import {Consumer} from '../context';
                             <div className="card-title">
                             <h4 className="card-title">Name :{name}
                             <i onClick={this.showContact.bind(this,name)} className="fa fa-sort-down "></i>
+                               {/* /to est dynamique  */}
+                            <Link  to={`/contact/edit/${id}`}>
+                               <i style={{
+                                   color:"orange",
+                                   cursor:"pointer",
+                                   float:"right",
+                                   marginLeft:"10px"
+                                
+                               }} className="fa fa-pencil"></i>
+                             </Link>
                             <i style ={{color:'red',float:'right' ,cursor:'pointer'}} onClick={this.deleteContact.bind(this,id,dispatch)} className="fa fa-times "></i>
+                     
+                        
                             </h4>
                             </div>
                             <div className="cart-text">
                              {(this.state.showContactToogle) ?(
                                  <ul className="list-group">
-                                 <li className="list-group-item">Phone :{tel}</li>
+                                 <li className="list-group-item">Phone :{phone}</li>
                                  <li className="list-group-item">Email:{email}</li>
-                                 <li className="list-group-item">Phone :{tel}</li>
+                                 <li className="list-group-item">Phone :{phone}</li>
                                  </ul>
                              ): null}
                              
@@ -59,7 +78,7 @@ import {Consumer} from '../context';
                                        <div><p className="lead">
                                        {name} est un ingenieur en informatique avec une grande experience ,ouverte pour le travail <br/> 
                                        Email:{email}<br/> 
-                                       phone:{tel} <br/>
+                                       phone:{phone} <br/>
                                        Localion :casa-Rabat-Mohamadia
                                        Meci 
                                             </p></div>
@@ -87,13 +106,13 @@ import {Consumer} from '../context';
 Contact.defaultProps={
     data: {
         name :"My name ",
-        tel: "000000",
+        phone: "000000",
         email:"Myemail@gmail.com"
     }
 }
 // pour la validation 
 Contact.propTypes={
-    name:PropTypes.string.isRequired
+  //  name:PropTypes.string.isRequired
 
 }
 

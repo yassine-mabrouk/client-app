@@ -3,7 +3,7 @@ import {Consumer} from '../context';
 import InputGroup from '../helper/InputGroup'
 import axios from 'axios'
 
- class AddContact extends Component {
+ class EditContact extends Component {
      state={
          name:"",
          email:"",
@@ -24,9 +24,10 @@ import axios from 'axios'
 //     e: evenemt declenche 
 //     e.target :pemet d'acceder aux elemetn du dom 
 
-        onChangeInput =(e) => this.setState( {
+      onChangeInput =(e) => this.setState( {
         [e.target.name]:e.target.value
-        })
+      })
+
      submit =async (dispatch ,size,e)=> {
           //pour stoper le submet de data 
           e.preventDefault();
@@ -53,23 +54,16 @@ import axios from 'axios'
        return;
     }
     // ajouter un contact dans server 
-    const newContact ={
+    const updateContact ={
         id:size+1,
         name:name,
         email:email,
         phone:phone
     };
-    //    axios.post("https://jsonplaceholder.typicode.com/users",newContact).then(res=> {
-    //     dispatch({
-    //         type:"ADD_CONTACT",
-    //         payload:res.data
-    //     })
-    //    })
-    //    .catch(err=> console.log("cannot addd contact "+ err));
-       // autre methode 
-       const res =await axios.post("https://jsonplaceholder.typicode.com/users",newContact);
+       const id =this.props.match.params.id ;
+       const res =await axios.put("https://jsonplaceholder.typicode.com/users/"+id,updateContact);
        dispatch({
-                type:"ADD_CONTACT",
+                type:"UPDATE_CONTACT",
                 payload:res.data
             });
       
@@ -81,6 +75,20 @@ import axios from 'axios'
         // ajouter un redirection vers la liset e des contact 
         this.props.history.push('/');
       };
+
+      //cette fonction et executer lores dl'exucution du component 
+     async componentDidMount(){
+        // pour recuperer le sygment dynamique 
+      const id =this.props.match.params.id;
+      const res=await axios.get("https://jsonplaceholder.typicode.com/users/"+id);
+     const{name,email,phone}=res.data;
+      this.setState({
+          name:name,
+          email:email,
+          phone:phone
+      });
+    } 
+
     render() {
         const {name,email,phone,errors}= this.state;
 
@@ -122,7 +130,7 @@ import axios from 'axios'
                           error={errors.phone}
                           />
                           
-                            <button  className="btn btn-primary "  > Add Contact </button>
+                            <button  className="btn btn-primary "  > Edit Contact </button>
                           </div>
                       </div>
                   </div>
@@ -137,4 +145,4 @@ import axios from 'axios'
        
     }
 }
-export default AddContact;
+export default EditContact;
